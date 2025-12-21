@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+@font-face {
+	font-family: 'Inter';
+	font-weight: 400 900;
+	font-style: normal;
+	font-display: swap;
+	src: url(/assets/inter/Inter.ttf) format('truetype');
+}
+
+@font-face {
+	font-family: 'Open Runde';
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+	src: url(/assets/open-runde/OpenRunde-Regular.woff2) format('woff');
+}
+
+@font-face {
+	font-family: 'Open Runde';
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+	src: url(/assets/open-runde/OpenRunde-Medium.woff2) format('woff');
+}
+
+@font-face {
+	font-family: 'Open Runde';
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+	src: url(/assets/open-runde/OpenRunde-SemiBold.woff2) format('woff');
+}
+
+@font-face {
+	font-family: 'Open Runde';
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+	src: url(/assets/open-runde/OpenRunde-Bold.woff2) format('woff');
+}
+
+@theme {
+    --font-sans: "Inter", "sans-serif";
+}
+
+html {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+body {
+	width: 100dvw;
+	overflow-x: hidden;
+	background-color: black;
+	color: white;
+}
+
+/* Global focus style */
+*:not([class*="outline-"]) {
+	@apply outline-sky-400;
+}
+
+:focus {
+	@apply transition-all duration-150 outline-blue-400 outline-offset-4;
+}
+
+.progressive-blur {
+	-webkit-backdrop-filter: blur(40px);
+	backdrop-filter: blur(40px);
+	-webkit-mask-image: linear-gradient(to bottom, transparent, black);
+	mask-image: linear-gradient(to bottom, transparent, black);
+}
