@@ -44,6 +44,38 @@
     --font-sans: "Inter", "sans-serif";
 }
 
+:root {
+	--rainbow-gradient: linear-gradient(
+		90deg,
+		#ff1744,
+		#ff9100,
+		#ffea00,
+		#00e676,
+		#00b0ff,
+		#651fff,
+		#f500ff,
+		#ff1744
+	);
+}
+
+@keyframes rainbow-pan {
+	0% {
+		background-position: 0% 50%;
+	}
+	100% {
+		background-position: 200% 50%;
+	}
+}
+
+@keyframes rainbow-hue {
+	0% {
+		filter: hue-rotate(0deg);
+	}
+	100% {
+		filter: hue-rotate(360deg);
+	}
+}
+
 html {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
@@ -52,11 +84,93 @@ html {
 body {
 	width: 100dvw;
 	overflow-x: hidden;
-	background-color: black;
+	background-image: var(--rainbow-gradient);
+	background-size: 400% 400%;
+	background-attachment: fixed;
+	animation: rainbow-pan 18s linear infinite;
 	color: white;
 }
 
-/* Global focus style */
+body :where(h1, h2, h3, h4, h5, h6, p, span, a, button, label, input, textarea, select, option, li, dt, dd, th, td, small, strong, em) {
+	background-image: var(--rainbow-gradient);
+	background-size: 400% 400%;
+	animation: rainbow-pan 12s linear infinite;
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent !important;
+	-webkit-text-fill-color: transparent;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.55);
+}
+
+body :where(button, input, textarea, select) {
+	border: 1px solid transparent !important;
+	background:
+		linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)) padding-box,
+		var(--rainbow-gradient) border-box !important;
+	background-size: 400% 400%;
+	animation: rainbow-pan 12s linear infinite;
+	caret-color: rgba(255, 255, 255, 0.9);
+}
+
+body :where(img, picture img, video, canvas) {
+	mix-blend-mode: screen;
+	opacity: 0.98;
+	filter: saturate(1.6) contrast(1.15) hue-rotate(0deg);
+	animation: rainbow-hue 10s linear infinite;
+}
+
+body :where([class*="bg-[url"], [style*="background-image"]) {
+	position: relative;
+	isolation: isolate;
+}
+
+body :where([class*="bg-[url"], [style*="background-image"])::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background-image: var(--rainbow-gradient);
+	background-size: 400% 400%;
+	animation: rainbow-pan 10s linear infinite;
+	mix-blend-mode: screen;
+	opacity: 0.55;
+}
+
+body :where(input, textarea)::placeholder {
+	background: none;
+	-webkit-background-clip: initial;
+	background-clip: initial;
+	color: rgba(255, 255, 255, 0.75);
+	-webkit-text-fill-color: rgba(255, 255, 255, 0.75);
+	text-shadow: none;
+}
+
+body :where(a:hover) {
+	filter: saturate(1.25) contrast(1.1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	body {
+		animation: none;
+	}
+
+	body :where(h1, h2, h3, h4, h5, h6, p, span, a, button, label, input, textarea, select, option, li, dt, dd, th, td, small, strong, em) {
+		animation: none;
+	}
+
+	body :where(button, input, textarea, select) {
+		animation: none;
+	}
+
+	body :where(img, picture img, video, canvas) {
+		animation: none;
+	}
+
+	body :where([class*="bg-[url"], [style*="background-image"])::after {
+		animation: none;
+	}
+}
+
 *:not([class*="outline-"]) {
 	@apply outline-sky-400;
 }
