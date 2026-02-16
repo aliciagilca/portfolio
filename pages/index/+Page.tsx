@@ -68,15 +68,25 @@ export default function Page() {
           <Button
             onClick={() => {
               const email = "alicia.gilca10@gmail.com";
+              const copyFallback = () => {
+                const textarea = document.createElement("textarea");
+                textarea.value = email;
+                textarea.setAttribute("readonly", "");
+                textarea.style.position = "fixed";
+                textarea.style.left = "-9999px";
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand("copy");
+                document.body.removeChild(textarea);
+                toast.success("Email copied to clipboard");
+              };
               if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard
                   .writeText(email)
                   .then(() => toast.success("Email copied to clipboard"))
-                  .catch(() => {
-                    window.location.href = `mailto:${email}`;
-                  });
+                  .catch(() => copyFallback());
               } else {
-                window.location.href = `mailto:${email}`;
+                copyFallback();
               }
             }}
             variant="secondary"
