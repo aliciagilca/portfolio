@@ -59,8 +59,7 @@ export default function Page() {
             <span className="text-neutral-400 mr-1">Alicia.</span> An Amsterdam-based producer working in marketing
           </h1>
           <p className="leading-normal text-lg tracking-normal mb-8 text-neutral-400">
-            I&apos;m helping brands to create content and work with them in an interdisciplinary manner to create a
-            cohesive and engaging experience for the audience.
+            I&apos;m the best producer you&apos;ll ever meet &lt;3
           </p>
         </div>
         <div className="flex md:flex-row flex-col-reverse items-start gap-2 md:justify-end">
