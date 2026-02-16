@@ -3,6 +3,16 @@ import { Reference, Recommendation, Social, Work } from "./types";
 export const work: Work[] = [
   {
     id: 1,
+    company: "StoryTeq",
+    title: "Project Manager",
+    startDate: "2025",
+    endDate: "2026",
+    description: "I was responsible for project management.",
+    logo: "/images/storyteq-logo.png",
+    url: "https://www.storyteq.com",
+  },
+  {
+    id: 2,
     company: "Versuni",
     title: "Marketing Intern",
     startDate: "2024",
@@ -10,16 +20,6 @@ export const work: Work[] = [
     description: "I was responsible for the creation of content for the company's social media channels.",
     logo: "/images/versuni-logo.webp",
     url: "https://www.versuni.com",
-  },
-  {
-    id: 2,
-    company: "StoryTeq",
-    title: "Project Manager",
-    startDate: "2025",
-    endDate: "2026",
-    description: "I was responsible for project management.",
-    logo: "/images/versuni-logo.webp",
-    url: "https://www.storyteq.com",
   },
 ];
 
