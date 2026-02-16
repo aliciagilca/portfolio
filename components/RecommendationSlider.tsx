@@ -118,7 +118,15 @@ export default function RecommendationSlider({ recommendations }: Recommendation
   }, [recommendations]);
 
   return (
-    <div className="w-full cursor-grab active:cursor-grabbing py-4" style={{ perspective: "1200px" }}>
+    <div className="w-full cursor-grab active:cursor-grabbing" style={{ perspective: "1200px" }}>
+      <style>{`
+        .recommendations-slider.swiper {
+          overflow: visible;
+        }
+        .recommendations-slider .swiper-wrapper {
+          overflow: visible;
+        }
+      `}</style>
       <Swiper
         modules={[Autoplay]}
         spaceBetween={24}
@@ -133,8 +141,10 @@ export default function RecommendationSlider({ recommendations }: Recommendation
         className="recommendations-slider"
       >
         {recommendations.map((rec, index) => (
-          <SwiperSlide key={rec.id}>
-            <TiltCard rec={rec} rotation={rotations[index]} />
+          <SwiperSlide key={rec.id} className="!overflow-visible">
+            <div className="py-6">
+              <TiltCard rec={rec} rotation={rotations[index]} />
+            </div>
           </SwiperSlide>
         ))}
       </Swiper>
