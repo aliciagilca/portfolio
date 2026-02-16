@@ -1,8 +1,9 @@
 import React from "react";
 import Button from "../../components/Button";
 import { toast } from "sonner";
-import { references, socials, work } from "./data";
+import { references, recommendations, socials, work } from "./data";
 import ReferenceSlider from "../../components/ReferenceSlider";
+import RecommendationSlider from "../../components/RecommendationSlider";
 
 export default function Page() {
   const [formState, setFormState] = React.useState({
@@ -113,6 +114,12 @@ export default function Page() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+      <section className="space-y-2 mb-32">
+        <h1 className="text-2xl font-semibold tracking-tight mb-8 max-w-4xl mx-auto px-8">Recommendations</h1>
+        <div className="w-full max-w-6xl mx-auto px-8">
+          <RecommendationSlider recommendations={recommendations} />
         </div>
       </section>
       <section className="space-y-2 max-w-4xl mx-auto px-8 mb-16" id="contact">

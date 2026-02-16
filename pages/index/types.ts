@@ -28,3 +28,14 @@ export type Social = {
   name: string;
   link?: string;
 };
+
+export type Recommendation = {
+  id: number;
+  slug: string;
+  name: string;
+  role: string;
+  company: string;
+  avatar: string;
+  highlight: string;
+  fullText: string;
+};
