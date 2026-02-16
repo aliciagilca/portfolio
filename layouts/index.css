@@ -91,3 +91,8 @@ body {
 .halo-effect:disabled {
 	box-shadow: none;
 }
+
+.references-slider,
+.references-slider .swiper-wrapper {
+	overflow: visible !important;
+}
