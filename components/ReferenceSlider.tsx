@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import { Reference } from "../pages/index/types";
@@ -9,88 +9,21 @@ interface ReferenceSliderProps {
   references: Reference[];
 }
 
-const blobKeyframes = [
-  "60% 40% 30% 70% / 40% 60% 70% 30%",
-  "30% 60% 70% 40% / 50% 30% 60% 50%",
-  "50% 50% 40% 60% / 60% 40% 50% 50%",
-  "40% 60% 50% 50% / 30% 70% 40% 60%",
-  "70% 30% 60% 40% / 50% 50% 30% 70%",
-  "60% 40% 30% 70% / 40% 60% 70% 30%",
-];
-
-function lerp(a: string, b: string, t: number): string {
-  const parseRadius = (s: string) => {
-    const [topPart, bottomPart] = s.split("/").map((p) => p.trim());
-    const top = topPart.split(" ").map((v) => parseFloat(v));
-    const bottom = bottomPart.split(" ").map((v) => parseFloat(v));
-    return [...top, ...bottom];
-  };
-  const va = parseRadius(a);
-  const vb = parseRadius(b);
-  const result = va.map((v, i) => v + (vb[i] - v) * t);
-  return `${result[0]}% ${result[1]}% ${result[2]}% ${result[3]}% / ${result[4]}% ${result[5]}% ${result[6]}% ${result[7]}%`;
-}
-
-function LiquidCard({ item }: { item: Reference }) {
+function CurtainCard({ item }: { item: Reference }) {
   const [hovered, setHovered] = useState(false);
-  const [borderRadius, setBorderRadius] = useState("12px");
-  const [borderColor, setBorderColor] = useState("rgba(255,255,255,0.08)");
-  const animRef = useRef<number>(0);
-  const startRef = useRef<number>(0);
-
-  useEffect(() => {
-    if (!hovered) {
-      cancelAnimationFrame(animRef.current);
-      setBorderRadius("12px");
-      setBorderColor("rgba(255,255,255,0.08)");
-      return;
-    }
-
-    startRef.current = Date.now();
-
-    function animate() {
-      const elapsed = (Date.now() - startRef.current) / 1000;
-      const cycleDuration = 3;
-      const progress = (elapsed % (cycleDuration * (blobKeyframes.length - 1))) / cycleDuration;
-      const idx = Math.floor(progress);
-      const t = progress - idx;
-      const smoothT = t * t * (3 - 2 * t);
-
-      const currentRadius = lerp(
-        blobKeyframes[idx % (blobKeyframes.length - 1)],
-        blobKeyframes[(idx + 1) % blobKeyframes.length],
-        smoothT
-      );
-      setBorderRadius(currentRadius);
-
-      const hue = (elapsed * 30) % 360;
-      setBorderColor(`hsla(${hue}, 40%, 65%, 0.4)`);
-
-      animRef.current = requestAnimationFrame(animate);
-    }
-
-    animate();
-    return () => cancelAnimationFrame(animRef.current);
-  }, [hovered]);
 
   return (
     <a
       href={`/references/${item.slug}`}
-      className="block md:aspect-video md:h-auto h-96 relative p-6"
+      className="block md:aspect-video md:h-auto h-96 relative p-4"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       <div
-        className="relative w-full h-full overflow-hidden"
+        className="relative w-full h-full rounded-xl overflow-hidden"
         style={{
-          borderRadius: borderRadius,
-          border: `2px solid ${borderColor}`,
-          transition: hovered
-            ? "border-color 0.3s ease"
-            : "border-radius 0.8s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.6s ease",
-          boxShadow: hovered
-            ? `0 0 30px ${borderColor}, 0 0 60px ${borderColor.replace("0.4", "0.15")}`
-            : "none",
+          border: `1px solid rgba(255,255,255,${hovered ? 0.15 : 0.08})`,
+          transition: "border-color 0.4s ease",
         }}
       >
         {item.type === "image" ? (
@@ -99,8 +32,8 @@ function LiquidCard({ item }: { item: Reference }) {
             alt={item.company}
             className="absolute inset-0 w-full h-full object-cover"
             style={{
-              transform: hovered ? "scale(1.06)" : "scale(1)",
-              transition: "transform 1.2s cubic-bezier(0.23, 1, 0.32, 1)",
+              transform: hovered ? "scale(1.05)" : "scale(1)",
+              transition: "transform 1.5s cubic-bezier(0.23, 1, 0.32, 1)",
             }}
           />
         ) : (
@@ -108,8 +41,8 @@ function LiquidCard({ item }: { item: Reference }) {
             src={item.file}
             className="absolute inset-0 w-full h-full object-cover"
             style={{
-              transform: hovered ? "scale(1.06)" : "scale(1)",
-              transition: "transform 1.2s cubic-bezier(0.23, 1, 0.32, 1)",
+              transform: hovered ? "scale(1.05)" : "scale(1)",
+              transition: "transform 1.5s cubic-bezier(0.23, 1, 0.32, 1)",
             }}
             controls={false}
             autoPlay
@@ -119,30 +52,98 @@ function LiquidCard({ item }: { item: Reference }) {
         )}
 
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="absolute inset-0 z-10 pointer-events-none"
           style={{
-            background:
-              "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 30%, transparent 60%)",
-            opacity: hovered ? 1 : 0.6,
-            transition: "opacity 0.5s ease",
+            background: hovered
+              ? "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 40%)"
+              : "rgba(0,0,0,0.55)",
+            transition: "background 0.8s cubic-bezier(0.23, 1, 0.32, 1)",
           }}
         />
 
-        <div className="absolute bottom-0 left-0 right-0 z-20 p-6">
+        <div
+          className="absolute top-0 left-0 w-1/2 h-full z-20 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 60%, rgba(0,0,0,0.3) 100%)",
+            transform: hovered ? "translateX(-105%)" : "translateX(0)",
+            transition: "transform 0.9s cubic-bezier(0.76, 0, 0.24, 1)",
+          }}
+        />
+
+        <div
+          className="absolute top-0 right-0 w-1/2 h-full z-20 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 60%, rgba(0,0,0,0.3) 100%)",
+            transform: hovered ? "translateX(105%)" : "translateX(0)",
+            transition: "transform 0.9s cubic-bezier(0.76, 0, 0.24, 1)",
+          }}
+        />
+
+        <div
+          className="absolute left-1/2 top-0 bottom-0 z-20 pointer-events-none"
+          style={{
+            width: "1px",
+            background: "rgba(255,255,255,0.15)",
+            transform: `translateX(-50%) scaleY(${hovered ? 0 : 1})`,
+            transition: "transform 0.6s cubic-bezier(0.76, 0, 0.24, 1)",
+            transformOrigin: "center center",
+          }}
+        />
+
+        <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
           <span
-            className="text-sm font-light tracking-widest uppercase block"
+            className="text-xs font-light uppercase"
             style={{
-              opacity: hovered ? 1 : 0.7,
-              transform: hovered ? "translateY(-4px)" : "translateY(0)",
-              textShadow: hovered
-                ? "0 2px 20px rgba(0,0,0,0.8), 0 0 10px rgba(255,255,255,0.2)"
-                : "0 2px 10px rgba(0,0,0,0.5)",
+              letterSpacing: hovered ? "0.5em" : "0.15em",
+              opacity: hovered ? 0 : 0.5,
               transition:
-                "opacity 0.4s ease, transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), text-shadow 0.4s ease",
+                "letter-spacing 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.4s ease",
             }}
           >
             {item.company}
           </span>
+        </div>
+
+        <div className="absolute bottom-0 left-0 right-0 z-30 p-6">
+          <div
+            className="overflow-hidden"
+            style={{
+              height: hovered ? "auto" : "0",
+              opacity: hovered ? 1 : 0,
+              transform: hovered ? "translateY(0)" : "translateY(12px)",
+              transition:
+                "opacity 0.6s ease 0.3s, transform 0.8s cubic-bezier(0.23, 1, 0.32, 1) 0.3s",
+            }}
+          >
+            <div
+              className="h-px mb-4"
+              style={{
+                width: hovered ? "60px" : "0px",
+                background: "rgba(255,255,255,0.5)",
+                transition: "width 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s",
+              }}
+            />
+            <span
+              className="text-sm font-light tracking-widest uppercase block"
+              style={{
+                textShadow: "0 2px 20px rgba(0,0,0,0.8)",
+              }}
+            >
+              {item.company}
+            </span>
+            <span
+              className="text-xs font-light block mt-1"
+              style={{
+                opacity: hovered ? 0.5 : 0,
+                transition: "opacity 0.5s ease 0.5s",
+                letterSpacing: "0.1em",
+              }}
+            >
+              View project
+            </span>
+          </div>
         </div>
       </div>
     </a>
@@ -163,7 +164,7 @@ export default function ReferenceSlider({ references }: ReferenceSliderProps) {
       >
         {references.map((item) => (
           <SwiperSlide key={item.id} className="!overflow-visible">
-            <LiquidCard item={item} />
+            <CurtainCard item={item} />
           </SwiperSlide>
         ))}
       </Swiper>
