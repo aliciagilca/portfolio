@@ -6,6 +6,7 @@ export type Work = {
   endDate: string;
   description: string;
   logo: string;
+  url?: string;
 };
 
 export type ReferenceItem = {

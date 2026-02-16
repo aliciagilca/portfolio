@@ -43,20 +43,7 @@ export default function Page() {
         </a>
 
         <div className="mb-12">
-          {reference.link ? (
-            <a
-              href={reference.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group inline-block"
-            >
-              <h1 className="text-3xl font-semibold tracking-tight mb-2 group-hover:text-neutral-300 transition-colors underline decoration-neutral-500 group-hover:decoration-white">
-                {reference.company}
-              </h1>
-            </a>
-          ) : (
-            <h1 className="text-3xl font-semibold tracking-tight mb-2">{reference.company}</h1>
-          )}
+          <h1 className="text-3xl font-semibold tracking-tight mb-2">{reference.company}</h1>
           {reference.link && (
             <a
               href={reference.link}

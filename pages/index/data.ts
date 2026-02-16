@@ -9,6 +9,7 @@ export const work: Work[] = [
     endDate: "2025",
     description: "I was responsible for the creation of content for the company's social media channels.",
     logo: "/images/versuni-logo.webp",
+    url: "https://www.versuni.com",
   },
 ];
 

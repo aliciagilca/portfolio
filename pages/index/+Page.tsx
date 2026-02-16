@@ -104,7 +104,18 @@ export default function Page() {
                     className="w-12 h-12 rounded-lg border border-white/10 mb-2"
                   />
                   <div className="flex flex-col gap-1 w-28">
-                    <span className="font-medium">{item.company}</span>
+                    {item.url ? (
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium hover:underline hover:text-neutral-300 transition-colors"
+                      >
+                        {item.company}
+                      </a>
+                    ) : (
+                      <span className="font-medium">{item.company}</span>
+                    )}
                     <span className="text-sm text-neutral-500">
                       {item.startDate} - {item.endDate}
                     </span>
