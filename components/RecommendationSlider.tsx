@@ -1,6 +1,7 @@
-import React, { useMemo, useRef, useCallback, useState } from "react";
+import React, { useRef, useCallback, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
 import { Recommendation } from "../pages/index/types";
 
 import "swiper/css";
@@ -9,20 +10,20 @@ interface RecommendationSliderProps {
   recommendations: Recommendation[];
 }
 
-function TiltCard({ rec, rotation }: { rec: Recommendation; rotation: number }) {
+function TiltCard({ rec, isActive }: { rec: Recommendation; isActive: boolean }) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [tiltStyle, setTiltStyle] = useState({
-    transform: `rotate(${rotation}deg)`,
+  const [tiltStyle, setTiltStyle] = useState<React.CSSProperties>({
+    transform: "perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)",
     transition: "transform 0.5s cubic-bezier(0.23, 1, 0.32, 1)",
   });
-  const [glareStyle, setGlareStyle] = useState({
+  const [glareStyle, setGlareStyle] = useState<React.CSSProperties>({
     opacity: 0,
     background: "radial-gradient(circle at 50% 50%, rgba(255,255,255,0.15), transparent 60%)",
   });
-  const isInteracting = useRef(false);
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!isActive) return;
       const card = cardRef.current;
       if (!card) return;
 
@@ -39,7 +40,7 @@ function TiltCard({ rec, rotation }: { rec: Recommendation; rotation: number }) 
       const glareY = (y / rect.height) * 100;
 
       setTiltStyle({
-        transform: `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotate(${rotation}deg) scale3d(1.02, 1.02, 1.02)`,
+        transform: `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03)`,
         transition: "transform 0.1s ease-out",
       });
 
@@ -47,23 +48,20 @@ function TiltCard({ rec, rotation }: { rec: Recommendation; rotation: number }) 
         opacity: 0.4,
         background: `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.2), transparent 60%)`,
       });
-
-      isInteracting.current = true;
     },
-    [rotation]
+    [isActive]
   );
 
   const handleMouseLeave = useCallback(() => {
     setTiltStyle({
-      transform: `rotate(${rotation}deg)`,
+      transform: "perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)",
       transition: "transform 0.5s cubic-bezier(0.23, 1, 0.32, 1)",
     });
     setGlareStyle({
       opacity: 0,
       background: "radial-gradient(circle at 50% 50%, rgba(255,255,255,0.15), transparent 60%)",
     });
-    isInteracting.current = false;
-  }, [rotation]);
+  }, []);
 
   return (
     <div
@@ -75,14 +73,18 @@ function TiltCard({ rec, rotation }: { rec: Recommendation; rotation: number }) 
     >
       <a
         href={`/recommendations/${rec.slug}`}
-        className="block p-6 md:p-8 rounded-xl border border-white/10 bg-white/[0.03] transition-colors duration-300 hover:border-white/25 hover:bg-white/[0.06] group"
+        className={`block p-6 md:p-8 rounded-xl border transition-all duration-500 group ${
+          isActive
+            ? "border-white/20 bg-white/[0.06] shadow-[0_0_30px_rgba(255,255,255,0.04)]"
+            : "border-white/8 bg-white/[0.02] opacity-60"
+        }`}
         style={{ transformStyle: "preserve-3d" }}
       >
         <div
           className="absolute inset-0 rounded-xl pointer-events-none transition-opacity duration-300"
           style={glareStyle}
         />
-        <div className="flex items-center gap-4 mb-5" style={{ transform: "translateZ(20px)" }}>
+        <div className="flex items-center gap-4 mb-5" style={{ transform: isActive ? "translateZ(20px)" : "none" }}>
           <img
             src={rec.avatar}
             alt={rec.name}
@@ -97,13 +99,15 @@ function TiltCard({ rec, rotation }: { rec: Recommendation; rotation: number }) 
         </div>
         <p
           className="text-neutral-300 text-sm leading-relaxed line-clamp-3"
-          style={{ transform: "translateZ(10px)" }}
+          style={{ transform: isActive ? "translateZ(10px)" : "none" }}
         >
           &ldquo;{rec.highlight}&rdquo;
         </p>
         <span
-          className="inline-block mt-4 text-xs text-neutral-500 group-hover:text-neutral-300 transition-colors"
-          style={{ transform: "translateZ(15px)" }}
+          className={`inline-block mt-4 text-xs transition-colors ${
+            isActive ? "text-neutral-400 group-hover:text-neutral-200" : "text-neutral-600"
+          }`}
+          style={{ transform: isActive ? "translateZ(15px)" : "none" }}
         >
           Read full review &rarr;
         </span>
@@ -113,9 +117,11 @@ function TiltCard({ rec, rotation }: { rec: Recommendation; rotation: number }) 
 }
 
 export default function RecommendationSlider({ recommendations }: RecommendationSliderProps) {
-  const rotations = useMemo(() => {
-    return recommendations.map(() => Math.random() * 2 - 1);
-  }, [recommendations]);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const handleSlideChange = useCallback((swiper: SwiperType) => {
+    setActiveIndex(swiper.realIndex);
+  }, []);
 
   return (
     <div className="w-full cursor-grab active:cursor-grabbing" style={{ perspective: "1200px" }}>
@@ -134,6 +140,8 @@ export default function RecommendationSlider({ recommendations }: Recommendation
         grabCursor={true}
         autoplay={{ delay: 6000, disableOnInteraction: false }}
         loop
+        onSlideChange={handleSlideChange}
+        onSwiper={handleSlideChange}
         breakpoints={{
           640: { slidesPerView: 1.5 },
           1024: { slidesPerView: 2.2 },
@@ -143,7 +151,7 @@ export default function RecommendationSlider({ recommendations }: Recommendation
         {recommendations.map((rec, index) => (
           <SwiperSlide key={rec.id} className="!overflow-visible">
             <div className="py-6">
-              <TiltCard rec={rec} rotation={rotations[index]} />
+              <TiltCard rec={rec} isActive={index === activeIndex} />
             </div>
           </SwiperSlide>
         ))}
