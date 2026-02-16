@@ -203,7 +203,7 @@ export default function Page() {
             />
           </div>
           <div className="pt-2">
-            <Button type="submit" variant="primary" className="w-full md:w-auto halo-effect" disabled={formState.submitting}>
+            <Button type="submit" variant="primary" className="w-full md:w-auto" disabled={formState.submitting}>
               {formState.submitting ? "Sending..." : "Send message"}
             </Button>
           </div>
