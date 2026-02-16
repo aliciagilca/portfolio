@@ -36,7 +36,21 @@ export default function ReferenceSlider({ references }: ReferenceSliderProps) {
                 ) : (
                   <video src={item.file} className="w-full h-full object-cover" controls={false} autoPlay muted loop />
                 )}
-                <div className="absolute bottom-12 left-12 bg-black/70 px-3 py-1 rounded text-sm">{item.company}</div>
+                <div className="absolute bottom-12 left-12">
+                  {item.link ? (
+                    <a
+                      href={item.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="bg-black/70 px-3 py-1 rounded text-sm hover:bg-white/20 transition-colors underline decoration-neutral-500 hover:decoration-white"
+                    >
+                      {item.company}
+                    </a>
+                  ) : (
+                    <span className="bg-black/70 px-3 py-1 rounded text-sm">{item.company}</span>
+                  )}
+                </div>
               </div>
             </a>
           </SwiperSlide>
