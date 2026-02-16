@@ -175,17 +175,26 @@ export default function Page() {
       <section className="space-y-2 max-w-4xl mx-auto px-8">
         <h2 className="text-lg font-semibold tracking-tight mb-4">Or find me here</h2>
         <div className="flex flex-col gap-2">
-          {socials.map((item) => (
-            <a
-              key={item.name}
-              href={item.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-medium hover:text-white/80 transition-colors self-start"
-            >
-              {item.name}
-            </a>
-          ))}
+          {socials.map((item) =>
+            item.link ? (
+              <a
+                key={item.name}
+                href={item.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium hover:text-white/80 transition-colors self-start"
+              >
+                {item.name}
+              </a>
+            ) : (
+              <span
+                key={item.name}
+                className="font-medium text-white self-start"
+              >
+                {item.name}
+              </span>
+            )
+          )}
         </div>
       </section>
       <section className="space-y-2 max-w-4xl mx-auto px-8 mt-40 text-xs text-neutral-500">

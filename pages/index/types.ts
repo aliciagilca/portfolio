@@ -18,5 +18,5 @@ export type Reference = {
 
 export type Social = {
   name: string;
-  link: string;
+  link?: string;
 };
