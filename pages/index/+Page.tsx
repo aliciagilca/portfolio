@@ -67,8 +67,17 @@ export default function Page() {
         <div className="flex md:flex-row flex-col-reverse items-start gap-2 md:justify-end">
           <Button
             onClick={() => {
-              toast.success("Email copied to clipboard");
-              navigator.clipboard.writeText("aliciagilca@gmail.com");
+              const email = "alicia.gilca10@gmail.com";
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard
+                  .writeText(email)
+                  .then(() => toast.success("Email copied to clipboard"))
+                  .catch(() => {
+                    window.location.href = `mailto:${email}`;
+                  });
+              } else {
+                window.location.href = `mailto:${email}`;
+              }
             }}
             variant="secondary"
             className="w-full md:w-auto"
