@@ -80,9 +80,12 @@ export default function Page() {
         </div>
       </section>
       <section className="relative">
-        <div className="absolute top-0 w-full h-32 bg-gradient-to-b from-black to-transparent" />
-        <div className="md:aspect-video md:h-auto h-96 bg-[url('/images/main.webp')] bg-cover bg-center" />
-        <div className="absolute bottom-0 w-full h-32 bg-gradient-to-t from-black to-transparent" />
+        <div className="absolute top-0 w-full h-32 bg-gradient-to-b from-black to-transparent z-10" />
+        <div className="flex md:flex-row flex-col">
+          <div className="md:w-1/2 w-full md:aspect-video aspect-[4/3] bg-[url('/images/main.webp')] bg-cover bg-center" />
+          <div className="md:w-1/2 w-full md:aspect-video aspect-[4/3] bg-[url('/images/heart.jpeg')] bg-cover bg-center" />
+        </div>
+        <div className="absolute bottom-0 w-full h-32 bg-gradient-to-t from-black to-transparent z-10" />
       </section>
       <section className="space-y-2 mb-32">
         <h1 className="text-2xl font-semibold tracking-tight mb-8 max-w-4xl mx-auto px-8">References</h1>
