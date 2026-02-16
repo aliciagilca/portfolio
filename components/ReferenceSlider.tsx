@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useCallback } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import { Reference } from "../pages/index/types";
@@ -9,145 +9,72 @@ interface ReferenceSliderProps {
   references: Reference[];
 }
 
-function ShimmerBorderCard({ item }: { item: Reference }) {
+function ParallaxCard({ item }: { item: Reference }) {
+  const cardRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number>(0);
-  const startTimeRef = useRef<number>(Date.now());
+  const [imageOffset, setImageOffset] = useState({ x: 0, y: 0 });
+  const [labelOffset, setLabelOffset] = useState({ x: 0, y: 0 });
+  const rafRef = useRef<number>(0);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (!cardRef.current) return;
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        const rect = cardRef.current!.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+        const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
 
-    const dpr = window.devicePixelRatio || 1;
+        setImageOffset({ x: x * -12, y: y * -8 });
+        setLabelOffset({ x: x * 18, y: y * 12 });
+      });
+    },
+    []
+  );
 
-    function resize() {
-      if (!canvas) return;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx!.scale(dpr, dpr);
-    }
-
-    resize();
-
-    function draw() {
-      if (!canvas || !ctx) return;
-      const rect = canvas.getBoundingClientRect();
-      const w = rect.width;
-      const h = rect.height;
-      const perimeter = 2 * (w + h);
-      const elapsed = (Date.now() - startTimeRef.current) / 1000;
-      const speed = 0.15;
-      const progress = (elapsed * speed) % 1;
-      const radius = 12;
-      const lineWidth = hovered ? 2 : 1;
-      const shimmerLength = perimeter * 0.25;
-
-      ctx.clearRect(0, 0, w, h);
-
-      const shimmerPos = progress * perimeter;
-
-      const gradient = ctx.createConicGradient(0, w / 2, h / 2);
-
-      const getPointOnPerimeter = (dist: number) => {
-        const d = ((dist % perimeter) + perimeter) % perimeter;
-        if (d < w) return { x: d, y: 0 };
-        if (d < w + h) return { x: w, y: d - w };
-        if (d < 2 * w + h) return { x: w - (d - w - h), y: h };
-        return { x: 0, y: h - (d - 2 * w - h) };
-      };
-
-      ctx.beginPath();
-      ctx.roundRect(lineWidth / 2, lineWidth / 2, w - lineWidth, h - lineWidth, radius);
-
-      const trailSteps = 60;
-      for (let i = 0; i < trailSteps; i++) {
-        const t = i / trailSteps;
-        const dist = shimmerPos - t * shimmerLength;
-        const point = getPointOnPerimeter(dist);
-        const alpha = (1 - t) * (hovered ? 0.9 : 0.5);
-
-        ctx.save();
-        ctx.globalAlpha = alpha;
-        ctx.lineWidth = lineWidth;
-        ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
-
-        const segStart = ((dist % perimeter) + perimeter) % perimeter;
-        const segEnd = (((dist + perimeter * 0.008) % perimeter) + perimeter) % perimeter;
-
-        ctx.beginPath();
-
-        const p1 = getPointOnPerimeter(segStart);
-        const p2 = getPointOnPerimeter(segStart + perimeter * 0.004);
-        ctx.moveTo(
-          Math.max(radius, Math.min(w - radius, p1.x)),
-          Math.max(radius, Math.min(h - radius, p1.y))
-        );
-        ctx.lineTo(
-          Math.max(radius, Math.min(w - radius, p2.x)),
-          Math.max(radius, Math.min(h - radius, p2.y))
-        );
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      animationRef.current = requestAnimationFrame(draw);
-    }
-
-    draw();
-
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(canvas);
-
-    return () => {
-      cancelAnimationFrame(animationRef.current);
-      resizeObserver.disconnect();
-    };
-  }, [hovered]);
+  const handleMouseLeave = useCallback(() => {
+    setHovered(false);
+    setImageOffset({ x: 0, y: 0 });
+    setLabelOffset({ x: 0, y: 0 });
+  }, []);
 
   return (
     <a
       href={`/references/${item.slug}`}
       className="block md:aspect-video md:h-auto h-96 relative p-4"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
     >
-      <div className="relative w-full h-full rounded-xl overflow-hidden">
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 w-full h-full z-30 pointer-events-none rounded-xl"
-          style={{ mixBlendMode: "screen" }}
-        />
-
-        <div
-          className="absolute -inset-px rounded-xl z-20 pointer-events-none transition-opacity duration-500"
-          style={{
-            opacity: hovered ? 1 : 0,
-            boxShadow:
-              "0 0 20px rgba(255,255,255,0.1), 0 0 40px rgba(255,255,255,0.05), inset 0 0 20px rgba(255,255,255,0.05)",
-          }}
-        />
-
-        <div className="absolute inset-0 rounded-xl border border-white/10 z-10 pointer-events-none" />
-
+      <div
+        ref={cardRef}
+        className="relative w-full h-full rounded-xl overflow-hidden"
+        style={{
+          border: `1px solid rgba(255,255,255,${hovered ? 0.2 : 0.08})`,
+          transition: "border-color 0.4s ease",
+        }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      >
         {item.type === "image" ? (
           <img
             src={item.file}
             alt={item.company}
-            className="w-full h-full object-cover transition-transform duration-700 ease-out"
+            className="absolute inset-0 w-full h-full object-cover"
             style={{
-              transform: hovered ? "scale(1.03)" : "scale(1)",
+              transform: `translate(${imageOffset.x}px, ${imageOffset.y}px) scale(${hovered ? 1.1 : 1.05})`,
+              transition: hovered
+                ? "transform 0.15s ease-out"
+                : "transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)",
             }}
           />
         ) : (
           <video
             src={item.file}
-            className="w-full h-full object-cover transition-transform duration-700 ease-out"
+            className="absolute inset-0 w-full h-full object-cover"
             style={{
-              transform: hovered ? "scale(1.03)" : "scale(1)",
+              transform: `translate(${imageOffset.x}px, ${imageOffset.y}px) scale(${hovered ? 1.1 : 1.05})`,
+              transition: hovered
+                ? "transform 0.15s ease-out"
+                : "transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)",
             }}
             controls={false}
             autoPlay
@@ -157,28 +84,51 @@ function ShimmerBorderCard({ item }: { item: Reference }) {
         )}
 
         <div
-          className="absolute inset-0 z-10 pointer-events-none transition-opacity duration-500"
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: hovered
+              ? "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.4) 100%)"
+              : "none",
+            opacity: hovered ? 1 : 0,
+            transition: "opacity 0.5s ease",
+          }}
+        />
+
+        <div
+          className="absolute inset-0 pointer-events-none"
           style={{
             background:
               "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 30%, transparent 60%)",
             opacity: hovered ? 1 : 0.6,
+            transition: "opacity 0.5s ease",
           }}
         />
 
-        <div className="absolute bottom-0 left-0 right-0 z-20 p-6">
+        <div
+          className="absolute bottom-0 left-0 right-0 z-20 p-6"
+          style={{
+            transform: `translate(${labelOffset.x}px, ${labelOffset.y}px)`,
+            transition: hovered
+              ? "transform 0.15s ease-out"
+              : "transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)",
+          }}
+        >
           <div
-            className="h-px mb-3 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+            className="h-px mb-3"
             style={{
-              width: hovered ? "60px" : "0px",
-              background: "rgba(255,255,255,0.5)",
+              width: hovered ? "40px" : "0px",
+              background: "rgba(255,255,255,0.6)",
+              transition: "width 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
             }}
           />
           <span
-            className="text-sm font-light tracking-widest uppercase transition-all duration-500 ease-out"
+            className="text-sm font-light tracking-widest uppercase block"
             style={{
               opacity: hovered ? 1 : 0.7,
-              letterSpacing: hovered ? "0.2em" : "0.1em",
-              textShadow: hovered ? "0 0 15px rgba(255,255,255,0.3)" : "none",
+              textShadow: hovered
+                ? "0 2px 20px rgba(0,0,0,0.8), 0 0 10px rgba(255,255,255,0.2)"
+                : "0 2px 10px rgba(0,0,0,0.5)",
+              transition: "opacity 0.4s ease, text-shadow 0.4s ease",
             }}
           >
             {item.company}
@@ -203,7 +153,7 @@ export default function ReferenceSlider({ references }: ReferenceSliderProps) {
       >
         {references.map((item) => (
           <SwiperSlide key={item.id} className="!overflow-visible">
-            <ShimmerBorderCard item={item} />
+            <ParallaxCard item={item} />
           </SwiperSlide>
         ))}
       </Swiper>
