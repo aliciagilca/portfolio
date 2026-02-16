@@ -11,6 +11,16 @@ export const work: Work[] = [
     logo: "/images/versuni-logo.webp",
     url: "https://www.versuni.com",
   },
+  {
+    id: 2,
+    company: "StoryTeq",
+    title: "Project Manager",
+    startDate: "2025",
+    endDate: "2026",
+    description: "I was responsible for project management.",
+    logo: "/images/versuni-logo.webp",
+    url: "https://www.storyteq.com",
+  },
 ];
 
 export const references: Reference[] = [
