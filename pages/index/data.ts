@@ -3,7 +3,7 @@ import { Reference, Recommendation, Social, Work } from "./types";
 export const work: Work[] = [
   {
     id: 1,
-    company: "StoryTeq",
+    company: "Storyteq",
     title: "Project Manager",
     startDate: "2025",
     endDate: "2026",
