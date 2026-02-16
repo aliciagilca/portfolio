@@ -15,24 +15,41 @@ export const work: Work[] = [
 export const references: Reference[] = [
   {
     id: 1,
+    slug: "versuni-campaign-1",
     company: "Versuni",
     type: "image",
     file: "/images/main.webp",
     link: "https://www.versuni.com",
+    items: [
+      { type: "image", file: "/images/main.webp", caption: "Campaign hero visual" },
+      { type: "image", file: "/images/main.webp", caption: "Social media content" },
+      { type: "image", file: "/images/main.webp", caption: "Brand activation" },
+    ],
   },
   {
     id: 2,
+    slug: "versuni-campaign-2",
     company: "Versuni",
     type: "image",
     file: "/images/main.webp",
     link: "https://www.versuni.com",
+    items: [
+      { type: "image", file: "/images/main.webp", caption: "Product launch" },
+      { type: "image", file: "/images/main.webp", caption: "Event coverage" },
+    ],
   },
   {
     id: 3,
+    slug: "versuni-campaign-3",
     company: "Versuni",
     type: "image",
     file: "/images/main.webp",
     link: "https://www.versuni.com",
+    items: [
+      { type: "image", file: "/images/main.webp", caption: "Content series" },
+      { type: "image", file: "/images/main.webp", caption: "Behind the scenes" },
+      { type: "image", file: "/images/main.webp", caption: "Final deliverable" },
+    ],
   },
 ];
 

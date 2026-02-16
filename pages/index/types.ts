@@ -8,12 +8,20 @@ export type Work = {
   logo: string;
 };
 
+export type ReferenceItem = {
+  type: "image" | "video";
+  file: string;
+  caption?: string;
+};
+
 export type Reference = {
   id: number;
+  slug: string;
   company: string;
   type: "image" | "video";
   file: string;
   link: string;
+  items: ReferenceItem[];
 };
 
 export type Social = {
