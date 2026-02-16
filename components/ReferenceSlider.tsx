@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import { Reference } from "../pages/index/types";
@@ -9,73 +9,114 @@ interface ReferenceSliderProps {
   references: Reference[];
 }
 
-const kenBurnsVariants = [
-  { from: "scale(1) translate(0%, 0%)", to: "scale(1.2) translate(-3%, -2%)" },
-  { from: "scale(1.05) translate(-2%, 0%)", to: "scale(1.2) translate(2%, -3%)" },
-  { from: "scale(1) translate(0%, -1%)", to: "scale(1.25) translate(-2%, 3%)" },
-  { from: "scale(1.1) translate(2%, 2%)", to: "scale(1.2) translate(-3%, -1%)" },
-  { from: "scale(1.05) translate(-1%, 2%)", to: "scale(1.25) translate(2%, -2%)" },
-];
-
-function KenBurnsCard({ item, index }: { item: Reference; index: number }) {
-  const variant = useMemo(
-    () => kenBurnsVariants[index % kenBurnsVariants.length],
-    [index]
-  );
-  const animationName = `kenburns-${index % kenBurnsVariants.length}`;
-  const duration = 12 + (index % 3) * 4;
+function LabelRevealCard({ item }: { item: Reference }) {
+  const [hovered, setHovered] = useState(false);
+  const letters = item.company.split("");
 
   return (
     <a
       href={`/references/${item.slug}`}
       className="block md:aspect-video md:h-auto h-96 relative p-8 group"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
-      <div className="block w-full h-full rounded-xl border border-white/10 overflow-hidden relative transition-all duration-500 ease-out hover:border-white/25 hover:shadow-[0_8px_32px_rgba(255,255,255,0.06)]">
+      <div className="block w-full h-full rounded-xl border border-white/10 overflow-hidden relative transition-all duration-500 ease-out hover:border-white/20">
         {item.type === "image" ? (
           <img
             src={item.file}
             alt={item.company}
-            className="w-full h-full object-cover"
-            style={{
-              animation: `${animationName} ${duration}s ease-in-out infinite alternate`,
-              willChange: "transform",
-            }}
+            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
         ) : (
           <video
             src={item.file}
-            className="w-full h-full object-cover"
-            style={{
-              animation: `${animationName} ${duration}s ease-in-out infinite alternate`,
-              willChange: "transform",
-            }}
+            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
             controls={false}
             autoPlay
             muted
             loop
           />
         )}
-        <div className="absolute inset-0 pointer-events-none z-10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+
+        <div
+          className="absolute inset-0 pointer-events-none z-10 transition-opacity duration-700"
           style={{
-            background: "radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.35) 100%)",
+            background:
+              "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 30%, transparent 60%)",
+            opacity: hovered ? 1 : 0.5,
           }}
         />
-        <div className="absolute bottom-12 left-12 z-20 transition-all duration-500 ease-out group-hover:-translate-y-1">
-          <span className="bg-black/70 backdrop-blur-sm px-3 py-1 rounded text-sm transition-all duration-500 group-hover:bg-black/80 group-hover:shadow-lg group-hover:shadow-white/10">
-            {item.company}
-          </span>
+
+        <div
+          className="absolute bottom-0 left-0 right-0 z-20 px-10 overflow-hidden transition-all duration-600 ease-[cubic-bezier(0.16,1,0.3,1)]"
+          style={{
+            height: hovered ? "140px" : "64px",
+          }}
+        >
+          <div
+            className="absolute inset-0 transition-opacity duration-500"
+            style={{
+              opacity: hovered ? 1 : 0,
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+              background:
+                "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 100%)",
+            }}
+          />
+
+          <div className="relative z-10 pt-4">
+            <div
+              className="h-px mb-4 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+              style={{
+                width: hovered ? "100%" : "0%",
+                background:
+                  "linear-gradient(to right, transparent, rgba(255,255,255,0.6), transparent)",
+              }}
+            />
+
+            <div className="flex overflow-hidden" aria-label={item.company}>
+              {letters.map((letter, i) => (
+                <span
+                  key={i}
+                  className="inline-block text-2xl font-light tracking-widest uppercase transition-all ease-[cubic-bezier(0.16,1,0.3,1)]"
+                  style={{
+                    transform: hovered ? "translateY(0)" : "translateY(100%)",
+                    opacity: hovered ? 1 : 0,
+                    transitionDuration: "600ms",
+                    transitionDelay: hovered ? `${80 + i * 40}ms` : "0ms",
+                    textShadow: hovered
+                      ? "0 0 20px rgba(255,255,255,0.3)"
+                      : "none",
+                  }}
+                >
+                  {letter === " " ? "\u00A0" : letter}
+                </span>
+              ))}
+            </div>
+
+            <span
+              className="block text-xs tracking-[0.3em] uppercase text-white/50 mt-2 transition-all duration-500 ease-out"
+              style={{
+                opacity: hovered ? 1 : 0,
+                transform: hovered ? "translateY(0)" : "translateY(8px)",
+                transitionDelay: hovered ? "400ms" : "0ms",
+              }}
+            >
+              View project
+            </span>
+
+            <span
+              className="block text-sm text-white/80 transition-all duration-500 ease-out absolute top-4"
+              style={{
+                opacity: hovered ? 0 : 1,
+                transform: hovered ? "translateY(-8px)" : "translateY(0)",
+              }}
+            >
+              {item.company}
+            </span>
+          </div>
         </div>
       </div>
-      <style>{`
-        @keyframes ${animationName} {
-          0% { transform: ${variant.from}; }
-          100% { transform: ${variant.to}; }
-        }
-        .group:hover img,
-        .group:hover video {
-          animation-play-state: paused !important;
-        }
-      `}</style>
     </a>
   );
 }
@@ -92,9 +133,9 @@ export default function ReferenceSlider({ references }: ReferenceSliderProps) {
         loop
         className="references-slider"
       >
-        {references.map((item, index) => (
+        {references.map((item) => (
           <SwiperSlide key={item.id} className="!overflow-visible">
-            <KenBurnsCard item={item} index={index} />
+            <LabelRevealCard item={item} />
           </SwiperSlide>
         ))}
       </Swiper>
