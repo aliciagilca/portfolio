@@ -64,9 +64,6 @@ export const socials: Social[] = [
     link: "https://www.instagram.com/alice_glc?igsh=Yzd2OTA2ZThjb3Jk",
   },
   {
-    name: "Substack",
-  },
-  {
     name: "Letterboxd",
   },
 ];
